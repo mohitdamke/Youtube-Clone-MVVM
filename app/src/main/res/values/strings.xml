@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Youtube Clone</string>
+    <string name="home">Home</string>
+    <string name="shorts">Short</string>
+    <string name="addvideo">AddVIDEO</string>
+    <string name="subscriptions">Subscriptions</string>
+    <string name="profile">Profile</string>
+    <string name="back" />
+</resources>
