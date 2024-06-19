@@ -6,8 +6,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
@@ -22,8 +25,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight.Companion.W700
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -53,6 +60,7 @@ fun SignIn(
 
     val state = viewModel.signInState.collectAsState(initial = null)
 
+    val focusManager = LocalFocusManager.current
 
 
 
@@ -64,9 +72,33 @@ fun SignIn(
 
         Text(text = "SignIn", modifier = Modifier.padding(bottom = 30.dp), fontSize = 30.sp)
         Spacer(modifier = Modifier.height(30.dp))
-        OutlinedTextField(value = email, onValueChange = { email = it })
+        OutlinedTextField(value = email, onValueChange = { email = it },
+            label = { Text(text = "Email") }, singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }
+            ),
+            modifier = modifier.fillMaxWidth()
+        )
         Spacer(modifier = Modifier.height(30.dp))
-        OutlinedTextField(value = password, onValueChange = { password = it })
+        OutlinedTextField(value = password, onValueChange = { password = it },
+            label = { Text(text = "Password") }, singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }
+            ),
+            modifier = modifier.fillMaxWidth()
+        )
         Spacer(modifier = Modifier.height(30.dp))
         Button(onClick = {
             scope.launch {
@@ -84,11 +116,10 @@ fun SignIn(
         Button(onClick = {
             navController.navigate(NestedScreens.SignUpScreen.route)
         }) {
-            Text(text = "SignUp", fontWeight = W700, fontSize = 30.sp)
+            Text(text = "SignUp")
         }
         Spacer(modifier = Modifier.height(20.dp))
         Row {
-
 
             if (state.value?.isLoading == true) {
                 CircularProgressIndicator()
@@ -97,8 +128,12 @@ fun SignIn(
             LaunchedEffect(key1 = state.value?.isSuccess) {
                 scope.launch {
                     if (state.value?.isSuccess?.isNotEmpty() == true) {
-                        val success = state.value?.isSuccess
-                        navController.navigate(NestedScreens.HomeScreen.route)
+//                        val success = state.value?.isSuccess
+                        navController.navigate(NestedScreens.HomeScreen.route){
+                            popUpTo(navController.graph.startDestinationId){
+                                inclusive = true
+                            }
+                        }
                     }
                 }
             }

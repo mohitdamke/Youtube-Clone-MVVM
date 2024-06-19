@@ -14,22 +14,44 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.youtubeclone.R
 import com.example.youtubeclone.navigation.nestednavigation.NestedScreens
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun LoadingScreen(modifier: Modifier = Modifier, navController: NavController) {
+fun LoadingScreen(
+    modifier: Modifier = Modifier,
+    navController: NavController = rememberNavController()
+) {
 
     val coroutineScope = rememberCoroutineScope()
+    val firebase = FirebaseAuth.getInstance()
+    val currentUser = firebase.currentUser
 
-    LaunchedEffect(Unit) {
+
+    LaunchedEffect(currentUser) {
         coroutineScope.launch {
-            delay(1000)
-            navController.navigate(NestedScreens.HomeScreen.route)
+
+            if (currentUser == null && currentUser?.uid == null) {
+                navController.navigate(NestedScreens.SignInScreen.route) {
+                    popUpTo(navController.graph.startDestinationId) { inclusive = true }
+
+                }
+            } else {
+                navController.navigate(NestedScreens.HomeScreen.route) {
+                    popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                }
+            }
         }
+
+        delay(1000)
+        navController.navigate(NestedScreens.HomeScreen.route)
     }
+
+
 
     Column(
         modifier = modifier

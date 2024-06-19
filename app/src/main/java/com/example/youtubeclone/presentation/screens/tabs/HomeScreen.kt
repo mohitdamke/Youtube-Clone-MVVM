@@ -27,25 +27,24 @@ import com.example.youtubeclone.presentation.viewmodel.auth.SignOutViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navController: NavController,
-    viewModel: SignOutViewModel = hiltViewModel()
+//    viewModel: SignOutViewModel = hiltViewModel()
 ) {
-    val scope = rememberCoroutineScope()
-    val state = viewModel.signOutState.collectAsState(initial = null)
+//    val scope = rememberCoroutineScope()
+//    val state = viewModel.signOutState.collectAsState(initial = null)
     val firebase = FirebaseAuth.getInstance()
 
-    LaunchedEffect(key1 = firebase.currentUser) {
-        scope.launch {
-            if (firebase.currentUser == null) {
-                navController.navigate(NestedScreens.SignInScreen.route) {
-                    popUpTo(NestedScreens.HomeScreen.route) { inclusive = true }
-                }
-            }
-        }
-    }
+//    LaunchedEffect(key1 = firebase.currentUser) {
+//        scope.launch {
+//            if (firebase.currentUser == null) {
+//                navController.navigate(NestedScreens.SignInScreen.route) {
+//                    popUpTo(NestedScreens.HomeScreen.route) { inclusive = true }
+//                }
+//            }
+//        }
+//    }
 
     Scaffold(topBar = {
         TopNavItems(navController = navController)
@@ -64,25 +63,9 @@ fun HomeScreen(
                 .padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            LaunchedEffect(key1 = state.value?.isSuccess) {
-                if (state.value?.isSuccess == "You have successfully logged out") {
-                    navController.navigate(NestedScreens.SignInScreen.route) {
-                        popUpTo(NestedScreens.HomeScreen.route) { inclusive = true }
-                    }
-                }
-            }
 
             Text(text = "Main Page", fontSize = 30.sp, fontWeight = FontWeight.W700)
 
-            Button(onClick = {
-                scope.launch {
-                    viewModel.SignOutUser()
-                    Log.d("TAG", "HomePage: ${firebase.signOut()}")
-                    Log.d("TAG", "lovdu lalit: ${firebase.currentUser}")
-                }
-            }) {
-                Text(text = "Logout", fontSize = 10.sp)
-            }
         }
     }
 }
